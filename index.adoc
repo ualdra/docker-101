@@ -1,0 +1,113 @@
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+:source-highlighter: rouge
+
+////
+Nombre - Titulo
+////
+# Docker
+Tutorial básico de la herramienta Docker
+Manel Mena <manel.mena@ual.es>
+
+
+// Modo no numerado de apartados
+:numbered!: 
+
+
+[abstract]
+== Resumen
+
+Resumen del tutorial de Docker
+
+.Objetivos
+
+* Conocer la herramienta Docker.
+* Realizar una pequeña introducción a Docker.
+* Instalar Docker.
+* Entrar en nuestra máquina Docker.
+* Aprender a usar Docker-Compose.
+* Conocer el concepto de Swarm dentro de Docker.
+
+// Modo numerado
+:numbered:
+
+== Introducción 
+
+Docker es una herramienta diseñada para hacer fácil crear, desplegar y hacer funcionar aplicaciones utilizando contenedores. Estos contenedores permiten al desarrollador empaquetar una aplicación con todas las partes que necesite: librerías, dependencias de la aplicación, software requisito de la aplicación, etc. Esto nos permite desplegarlo todo como un solo artefacto. 
+
+Gracias al los contenedores, el desarrollador se asegura que la aplicación funcionará en cualquier otra máquina sin importar los parámetros de configuración de la misma, aun cuando estos sean completamente distintos a los de la máquina donde se ha desarrollado y testeado el código. 
+
+Podemos decir que un contenedor se parece a una máquina virtual, pero al contrario que estas que lo que hacen es crear un sistema operativo completo Docker nos permite utilizar varios contenedores compartiendo el mismo kernel de Linux. Esto hace que haya una ventaja significativa tanto en rendimiento como en aprovechamiento del espacio.
+
+image::dockervsvm.png[]
+
+No menos importante es el hecho de que Docker es un proyecto de código abierto por lo que si cualquier persona repara en la necesidad de nuevas características, el mismo puede desarrollarlas. Y no solo eso, dado que es una herramienta utilizada por la gran mayoría de los proveedores de servicios en la nube (Microsoft Azure,Amazon AwS, Google Compute Engine, OpenStack, etc.) el soporte por parte de ellos es muy importante.
+
+[NOTE]
+====
+En la https://www.docker.com[web oficial de Docker] podéis encontrar documentación sobre la herramienta así como una serie de tutoriales muy interesantes.
+====
+
+=== Preparando la máquina
+
+Lo primero es comprobar que tenéis instalado y funcionando el siguiente Software.
+
+*	Git.
+
+[NOTE]
+====
+Para la realización del tutorial no es necesaria, pero es interesante que esta herramienta básica la tengáis instalada.
+====
+
+== Desarrollo
+=== Instalación de Docker
+==== Windows
+En esta sección os vamos a enseñar de manera muy rápida como aprovisionar una base de datos mediante Docker, lo cual servirá para que aprendáis como utilizar sistemas basados en contenedores.
+
+Docker es un proyecto de código abierto que automatiza el despliegue de aplicaciones dentro de contenedores de software, proporcionando una capa adicional de abstracción y automatización de virtualización a nivel de sistema operativo en Linux. Podemos llegar a pensar que es un concepto parecido a una máquina virtual, pero nada más lejos de la realidad, al contrario que una máquina virtual la cual requiere mantener todos los recursos necesarios para su mantenimiento reservados por el sistema, Docker nos permite compartir un kernel entre todos los contenedores que levantemos lo cual conlleva un mejor aprovechamiento de recursos, así como un uso mas comedido de los mismos. Para realizar la práctica nos vamos a descargar la community edition de Docker la cual podréis instalar en el siguiente enlace.
+
+https://www.docker.com/community-edition[Pagina de descarga de Docker]
+
+Una vez tengáis instalado Docker en vuestro sistema reiniciaremos el equipo, acto seguido comprobaremos que esta todo bien instalado, para ello lanzaremos en consola la orden `docker --version` y comprobaremos que sale algo parecido a la imagen que tenemos a continuación.
+
+image::DockerVersion.png[]
+
+=== Aprovisionamiento de una base de datos mediante Docker
+
+Una vez tenemos instalado Docker en nuestro sistema vamos a realizar un uso básico de la plataforma para levantar un contenedor con PostgreSQL. Para ello muchas empresas ofrecen imágenes de Docker para utilizar su software las cuales podremos encontrar en https://hub.docker.com[Docker Hub]. Una vez estamos en Docker hub buscamos la imagen que nos interese, en nuestro caso vamos a utilizar la que aparece en el siguiente https://hub.docker.com/r/centos/postgresql-96-centos7/[enlace].
+
+En el enlace podemos ver una serie de instrucciones de como personalizar parámetros de la base de datos, en nuestro caso vamos a centrarnos en un uso básico. Lo primero que vamos a hacer es bajar la imagen del contenedor para ello utilizaremos la orden 
+
+[source]
+----
+$ docker pull centos/postgresql-96-centos7
+----
+
+
+image::DockerPull.png[]
+
+Una vez descargada la imagen crearemos una carpeta donde lanzaremos la orden para levantar el contenedor, por el terminal nos crearemos una carpeta y dentro de ella crearemos otra llamada `data/`.
+
+image::mkDirData.png[]
+
+[NOTE]
+====
+Creamos una carpeta `data/` para que los datos persistan en nuestra máquina local, y así poder llevarnos esos datos a cualquier otra máquina o hacerle copias de seguridad.
+====
+
+Una vez tengamos las carpetas creadas nos situaremos dentro de la carpeta de dra y ejecutaremos la siguiente orden.
+
+[source]
+----
+$ docker run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 -v data:/var/lib/pgsql/data centos/postgresql-96-centos7
+----
+
+Una vez lancemos la orden ya tendremos levantada nuestra base de datos PostgreSQL en el puerto 5432 con usuario//contraseña user//pass y base de datos db. Para comprobar que se ha lanzado podéis utilizar la orden `docker ps` y os saldrá algo parecido a esto.
+
+image::DockerPs.png[]
+
+Con esto ya estamos listos para comenzar nuestra aplicación Spring Boot.
