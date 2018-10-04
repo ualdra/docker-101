@@ -556,13 +556,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_instalación_de_docker">2.1. Instalación de Docker</h3>
-<div class="sect3">
-<h4 id="_windows">2.1.1. Windows</h4>
 <div class="paragraph">
-<p>En esta sección os vamos a enseñar de manera muy rápida como aprovisionar una base de datos mediante Docker, lo cual servirá para que aprendáis como utilizar sistemas basados en contenedores.</p>
-</div>
-<div class="paragraph">
-<p>Docker es un proyecto de código abierto que automatiza el despliegue de aplicaciones dentro de contenedores de software, proporcionando una capa adicional de abstracción y automatización de virtualización a nivel de sistema operativo en Linux. Podemos llegar a pensar que es un concepto parecido a una máquina virtual, pero nada más lejos de la realidad, al contrario que una máquina virtual la cual requiere mantener todos los recursos necesarios para su mantenimiento reservados por el sistema, Docker nos permite compartir un kernel entre todos los contenedores que levantemos lo cual conlleva un mejor aprovechamiento de recursos, así como un uso mas comedido de los mismos. Para realizar la práctica nos vamos a descargar la community edition de Docker la cual podréis instalar en el siguiente enlace.</p>
+<p>Para realizar la práctica nos vamos a descargar la community edition de Docker la cual podréis instalar en el siguiente enlace.</p>
 </div>
 <div class="paragraph">
 <p><a href="https://www.docker.com/community-edition">Pagina de descarga de Docker</a></p>
@@ -575,6 +570,58 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <img src="./images/DockerVersion.png" alt="DockerVersion">
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>OSX: Se puede instala también a través de una orden de Homebrew (Packet manager para OSX).</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ brew cask install docker</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Linux: Podéis instalarlo mediante casi cualquiera de los packet manager de Linux.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ apt install docker.io
+$ yum install docker</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Es importante que comprobéis si la versión que habéis instalado cuenta con docker-compose, para ello intentar escribir en consola el comando <code>docker-compose --version</code> tendreis que ver algo parecido a esto.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/DockerVersion.png" alt="DockerVersion">
+</div>
+</div>
+<div class="paragraph">
+<p>En teoría solo os debería de faltar la herramienta compose si habéis instalado Docker en Linux, para ello seguid las instrucciones facilitadas en la documentación oficial de Docker. <a href="https://docs.docker.com/compose/install/">Instalación de docker-compose</a></p>
+</div>
+<div class="paragraph">
+<p>Para finalizar, y solo si habéis instalado Docker en Windows debeis de comprobar en las preferencias de docker que carpetas de volumen tenéis compartidas, para ello tenéis la posibilidad de compartir una carpeta de vuestro sistema, en cuyo caso todo los proyectos que tengan que ver con docker deberán estar dentro de esa carpeta, o bien directamente compartís la unidad C:, esto hará que todas las carpetas del sistema sean validas para generar una carpeta de volumen, este concepto lo explicaremos mas adelante.</p>
+</div>
+<div class="paragraph">
+<p>Para comprobar que todo este correcto en windows en la ventana de preferencias volumenes deberemos ver algo parecido a esto.</p>
 </div>
 </div>
 <div class="sect2">
@@ -642,7 +689,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-02 12:10:09 CEST
+Last updated 2018-10-04 11:07:27 CEST
 </div>
 </div>
 </body>
