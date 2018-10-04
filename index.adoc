@@ -34,7 +34,6 @@ Resumen del tutorial de Docker
 
 // Modo numerado
 :numbered:
-
 == Introducción 
 
 Docker es una herramienta diseñada para hacer fácil crear, desplegar y hacer funcionar aplicaciones utilizando contenedores. Estos contenedores permiten al desarrollador empaquetar una aplicación con todas las partes que necesite: librerías, dependencias de la aplicación, software requisito de la aplicación, etc. Esto nos permite desplegarlo todo como un solo artefacto. 
@@ -65,16 +64,39 @@ Para la realización del tutorial no es necesaria, pero es interesante que esta 
 
 == Desarrollo
 === Instalación de Docker
-==== Windows
-En esta sección os vamos a enseñar de manera muy rápida como aprovisionar una base de datos mediante Docker, lo cual servirá para que aprendáis como utilizar sistemas basados en contenedores.
-
-Docker es un proyecto de código abierto que automatiza el despliegue de aplicaciones dentro de contenedores de software, proporcionando una capa adicional de abstracción y automatización de virtualización a nivel de sistema operativo en Linux. Podemos llegar a pensar que es un concepto parecido a una máquina virtual, pero nada más lejos de la realidad, al contrario que una máquina virtual la cual requiere mantener todos los recursos necesarios para su mantenimiento reservados por el sistema, Docker nos permite compartir un kernel entre todos los contenedores que levantemos lo cual conlleva un mejor aprovechamiento de recursos, así como un uso mas comedido de los mismos. Para realizar la práctica nos vamos a descargar la community edition de Docker la cual podréis instalar en el siguiente enlace.
+Para realizar la práctica nos vamos a descargar la community edition de Docker la cual podréis instalar en el siguiente enlace.
 
 https://www.docker.com/community-edition[Pagina de descarga de Docker]
 
 Una vez tengáis instalado Docker en vuestro sistema reiniciaremos el equipo, acto seguido comprobaremos que esta todo bien instalado, para ello lanzaremos en consola la orden `docker --version` y comprobaremos que sale algo parecido a la imagen que tenemos a continuación.
 
 image::DockerVersion.png[]
+
+[NOTE]
+====
+*   OSX: Se puede instala también a través de una orden de Homebrew (Packet manager para OSX).
+[source]
+----
+$ brew cask install docker
+----
+
+*   Linux: Podéis instalarlo mediante casi cualquiera de los packet manager de Linux.
+[source]
+----
+$ apt install docker.io
+$ yum install docker
+----
+====
+
+Es importante que comprobéis si la versión que habéis instalado cuenta con docker-compose, para ello intentar escribir en consola el comando `docker-compose --version` tendreis que ver algo parecido a esto.
+
+image::DockerVersion.png[]
+
+En teoría solo os debería de faltar la herramienta compose si habéis instalado Docker en Linux, para ello seguid las instrucciones facilitadas en la documentación oficial de Docker. https://docs.docker.com/compose/install/[Instalación de docker-compose]
+
+Para finalizar, y solo si habéis instalado Docker en Windows debeis de comprobar en las preferencias de docker que carpetas de volumen tenéis compartidas, para ello tenéis la posibilidad de compartir una carpeta de vuestro sistema, en cuyo caso todo los proyectos que tengan que ver con docker deberán estar dentro de esa carpeta, o bien directamente compartís la unidad C:, esto hará que todas las carpetas del sistema sean validas para generar una carpeta de volumen, este concepto lo explicaremos mas adelante.
+
+Para comprobar que todo este correcto en windows en la ventana de preferencias volumenes deberemos ver algo parecido a esto.
 
 === Aprovisionamiento de una base de datos mediante Docker
 
