@@ -90,7 +90,7 @@ $ yum install docker
 
 Es importante que comprobéis si la versión que habéis instalado cuenta con docker-compose, para ello intentar escribir en consola el comando `docker-compose --version` tendreis que ver algo parecido a esto.
 
-image::DockerVersion.png[]
+image::docker_compose.png[]
 
 En teoría solo os debería de faltar la herramienta compose si habéis instalado Docker en Linux, para ello seguid las instrucciones facilitadas en la documentación oficial de Docker. https://docs.docker.com/compose/install/[Instalación de docker-compose]
 
