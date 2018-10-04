@@ -74,7 +74,7 @@ image::DockerVersion.png[]
 
 [NOTE]
 ====
-*   OSX: Se puede instala también a través de una orden de Homebrew (Packet manager para OSX).
+*   OSX: Se puede instalar también a través de una orden de Homebrew.
 [source]
 ----
 $ brew cask install docker
