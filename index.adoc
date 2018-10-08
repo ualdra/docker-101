@@ -100,25 +100,25 @@ Para comprobar que todo este correcto en windows en la ventana de carpetas compa
 
 image::dockerWin1.png[]
 
-A mas inri es interesante comprobar que recursos reserváis para que docker pueda ser utilizado sin que termine colapsando el funcionamiento de vuestro sistema. Los recursos reservados dependeran mucho de vuestro sistema, pero es recomendable que al menos reserveis dos cores y un par de Gb de RAM.
+A mas inri es interesante comprobar que recursos reserváis para que docker pueda ser utilizado sin que termine colapsando el funcionamiento de vuestro sistema. Los recursos reservados dependerán mucho de vuestro sistema, pero es recomendable que al menos reservéis dos cores y un par de GB de RAM.
 
 image::dockerWin2.png[]
 
-=== Aprovisionamiento de una base de datos mediante Docker
+=== Aprovisionamiento de un servidor de nginx mediante Docker
 
-Una vez tenemos instalado Docker en nuestro sistema vamos a realizar un uso básico de la plataforma para levantar un contenedor con PostgreSQL. Para ello muchas empresas ofrecen imágenes de Docker para utilizar su software las cuales podremos encontrar en https://hub.docker.com[Docker Hub]. Una vez estamos en Docker hub buscamos la imagen que nos interese, en nuestro caso vamos a utilizar la que aparece en el siguiente https://hub.docker.com/r/centos/postgresql-96-centos7/[enlace].
+Una vez tenemos instalado Docker en nuestro sistema vamos a realizar un uso básico de la plataforma para levantar un contenedor con nginx. Para ello muchas empresas ofrecen imágenes de Docker para utilizar su software las cuales podremos encontrar en https://hub.docker.com[Docker Hub]. Una vez estamos en Docker hub buscamos la imagen que nos interese, en nuestro caso vamos a utilizar la que aparece en el siguiente https://hub.docker.com/_/nginx/[enlace].
 
-En el enlace podemos ver una serie de instrucciones de como personalizar parámetros de la base de datos, en nuestro caso vamos a centrarnos en un uso básico. Lo primero que vamos a hacer es bajar la imagen del contenedor para ello utilizaremos la orden 
+En el enlace podemos ver una serie de instrucciones de como personalizar parámetros de la nuestro servidor de nginx, en nuestro caso vamos a centrarnos en un uso básico. Lo primero que vamos a hacer es bajar la imagen del contenedor para ello utilizaremos la orden. 
 
 [source]
 ----
-$ docker pull centos/postgresql-96-centos7
+$ docker pull nginx
 ----
 
 
-image::DockerPull.png[]
+image::dockerPull.png[]
 
-Una vez descargada la imagen crearemos una carpeta donde lanzaremos la orden para levantar el contenedor, por el terminal nos crearemos una carpeta y dentro de ella crearemos otra llamada `data/`.
+Esto lo que hace es descargarse la imagen de nginx junto con el resto de imagenes de las cuales esta depende. Una vez descargada la imagen crearemos una carpeta donde lanzaremos la orden para levantar el contenedor, por el terminal nos crearemos una carpeta y dentro de ella crearemos otra llamada `data/`.
 
 image::mkDirData.png[]
 
@@ -131,11 +131,94 @@ Una vez tengamos las carpetas creadas nos situaremos dentro de la carpeta de dra
 
 [source]
 ----
-$ docker run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 -v data:/var/lib/pgsql/data centos/postgresql-96-centos7
+$ docker run -p 8080:80 -v /Users/manelme/Desktop/dra/data:/usr/share/nginx/html/ -d nginx
 ----
 
-Una vez lancemos la orden ya tendremos levantada nuestra base de datos PostgreSQL en el puerto 5432 con usuario//contraseña user//pass y base de datos db. Para comprobar que se ha lanzado podéis utilizar la orden `docker ps` y os saldrá algo parecido a esto.
+[NOTE]
+====
+Importante!!, poner ruta absoluta a el directorio que queréis utilizar como carpeta compartida de volumen. 
+====
 
-image::DockerPs.png[]
+Una vez lancemos la orden ya tendremos levantada nuestro servidor de nginx por el puerto 8080 de nuestra maquina local. Para comprobar que se ha lanzado podéis utilizar la orden `docker ps` y os saldrá algo parecido a esto.
 
-Con esto ya estamos listos para comenzar nuestra aplicación Spring Boot.
+image::dockerPs.png[]
+
+Para comprobar que todo funciona nos metemos en nuestro navegador y comprobamos que http://localhost:8080[] funciona correctamente.
+
+[NOTE]
+====
+Si tenéis algo levantado en vuestro sistema por el puerto 8080 el ejercicio no funcionara.
+====
+
+Vamos a analizar un poco la instrucción utilizada a la hora de lanzar nuestro contenedor de nginx:
+
+. La instrucción `docker run` indica a Docker que debe levantar un nuevo contenedor.
+. El comando `-p 8080:80` le dice a nuestro motor de dockers que debe levantar una máquina con salida en el puerto 8080 de nuestra máquina local cuyo punto de entrada será el puerto 80 del contenedo, es decir, cualquier petición que entre por el 8080 será redirigida al 80 del contenedor.
+. `-v /Users/manelme/Desktop/dra/data:/usr/share/nginx/html` indica que cualquier cosa que este en la carpeta `/Users/manelme/Desktop/dra/data` irá a parar a la carpeta `/usr/share/nginx/html` de nuestro contenedor y viceversa.
+. El comando `-d nginx` le indica a docker que debe ejecutar la ultima imagen de nginx proveniente de docker-hub.
+
+Gracias a que hemos generado una carpeta de volumen a levantar nuestro contenedor podemos hacer cosas como generar un index.html en la carpeta `/data`, esto hará que al momento tengamos esa web levantada ya en el servidor. Hagamos la prueba:
+
+.Creamos un archivo `index.html` dentro de /data.
+====
+[source,HTML]
+----
+<!doctype html>
+<html>
+<head>
+    <title>DRA(ual) example nginx</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type="text/css">
+    body {
+        background-color: #f0f0f2;
+        margin: 0;
+        padding: 0;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 50px;
+        background-color: #fff;
+        border-radius: 1em;
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        body {
+            background-color: #fff;
+        }
+        div {
+            width: auto;
+            margin: 0 auto;
+            border-radius: 0;
+            padding: 1em;
+        }
+    }
+    </style>    
+</head>
+
+<body>
+<div>
+    <h1>DRA(ual) example nginx</h1>
+    <p>Esta es una página de ejemplo referente a la práctica de nginx</p>
+    <p><a href="https://ualdra.github.io/docker_101/">More information...</a></p>
+</div>
+</body>
+</html>
+
+----
+====
+
+Una vez hemos generado el archivo, comprobamos que el enlace de nuevo http://localhost:8080[] funciona correctamente.
+
+image::nginxex.png[]
+
+
+
