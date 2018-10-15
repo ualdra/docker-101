@@ -157,6 +157,11 @@ Vamos a analizar un poco la instrucción utilizada a la hora de lanzar nuestro c
 . `-v /Users/manelme/Desktop/dra/data:/usr/share/nginx/html` indica que cualquier cosa que este en la carpeta `/Users/manelme/Desktop/dra/data` irá a parar a la carpeta `/usr/share/nginx/html` de nuestro contenedor y viceversa.
 . El comando `-d nginx` le indica a docker que debe ejecutar la ultima imagen de nginx proveniente de docker-hub.
 
+[NOTE]
+====
+En la sección 3 tenéis las opciones mas comunes usados por la mayoría de imágenes cuando ejecutamos un docker run, así como los comando mas útiles del cliente docker.  
+====
+
 Gracias a que hemos generado una carpeta de volumen a levantar nuestro contenedor podemos hacer cosas como generar un index.html en la carpeta `/data`, esto hará que al momento tengamos esa web levantada ya en el servidor. Hagamos la prueba:
 
 .Creamos un archivo `index.html` dentro de /data.
@@ -219,6 +224,18 @@ Gracias a que hemos generado una carpeta de volumen a levantar nuestro contenedo
 Una vez hemos generado el archivo, comprobamos que el enlace de nuevo http://localhost:8080[] funciona correctamente.
 
 image::nginxex.png[]
+
+=== Docker-Compose
+
+== Cheat-Sheets
+
+Es interesante que veáis la documentación de cada una de las herramientas de las que hemos hablado, no obstante aquí tenéis unas pequeñas imágenes con referencias de comandos de cada una de ellas.
+
+=== Docker
+image::dockerCs.png[]
+=== Docker-Compose
+image::dockerComCs.png[]
+
 
 
 
