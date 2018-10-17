@@ -264,6 +264,13 @@ volumes:
 ----
 ====
 
+El archivo de definición como podeis ver es muy intuitivo, en el veis como declaramos la version que se va a utilizar de compose, y a continuación se definen los servicios. como se puede observar en este caso estamos levantando un wordpress, el mismo se compone de dos servicios:
+
+* Por un lado una base de datos, como se ve, con la palabra clave `image` se indica que estamos tirando de la imagen base de mysql que encontramos en https://hub.docker.com[docker-hub], la siguiente palabra clave `volumes` indica que la carpeta `/var/lib/mysql` ira a parar a la carpeta donde esta definido el volumen `db_data`, la palabra clave `restart` define que politica hay que seguir a la hora de restablecer el servicio cuando este se ve afectado por un problema que provoque una interrupción del mismo, por último con `environment` definimos las variables de entorno que la imagen necesita para configurarse.
+
+* En segundo lugar definimos la propia wordpress donde vemos que hay dos palabras claves nuevas. Primero, la palabra clave `depends_on` definimos de que microservicios incluidos en el compose dependemos, esto fuerza a que estos servicios se inicien antes, en nuestro caso la base de datos se tiene que iniciar antes de que wordpress se ponga a funcionar (algo totalmente lógico), por último en con `ports` definimos un puerto público de la máquina local y su correspondencia en el contenedor.
+
+Una vez hemos visto el archivo compose vamos a proceder a ejecutarlo, para ello lanzaremos la siguiente instrucción.
 
 == Cheat-Sheets
 
