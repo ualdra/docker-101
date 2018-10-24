@@ -272,6 +272,21 @@ El archivo de definición como podeis ver es muy intuitivo, en el veis como decl
 
 Una vez hemos visto el archivo compose vamos a proceder a ejecutarlo, para ello lanzaremos la siguiente instrucción.
 
+image::dockerComUpd.png[]
+
+La ejecución se encarga de generar una carpeta de volumen que como en este caso no la hemos creado en una ruta de manera explicita se generará en la carpeta de volumenes docker. Al igual que el volumen también se genera una red que al no nombrarla se genera con la coletilla default. Cuando termina de ejecutarse podemos comprobar con `docker ps` como se han levantado las dos maquinas definidas en el compose, y a su vez en este ejemplo vemos como hemos levantado de manera muy sencilla un Wordpress en el puesto 8000.
+
+image::dockerPsWordpress.png[]
+
+image::webInstalacionWordpress.png[]
+
+[NOTE]
+====
+El comando -d en docker-compose hace que no se bloquee la ventana del terminal con la ejecución, asi podremos seguir utilizarla. 
+====
+
+Por último cuando queramos detener las máquinas que estan incluidas en el archivo compose en bloque, utilizaremos la instrucción `docker-compose stop`. 
+
 == Cheat-Sheets
 
 Es interesante que veáis la documentación de cada una de las herramientas de las que hemos hablado, no obstante aquí tenéis unas pequeñas imágenes con referencias de comandos de cada una de ellas.
