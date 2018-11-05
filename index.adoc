@@ -301,3 +301,7 @@ image::dockerComCs.png[]
 Consultar la https://docs.docker.com/compose/compose-file/[documentación oficial de compose] donde podreis encontrar la sintaxis de las nuevas versiones.
 ====
 
+=== Docker-Compose
+
+Por último es interesante entender que es el modo swarm dentro de docker. Cuando trabajamos con https://docs.docker.com/engine/swarm/[docker-swarm] lo que estamos haciendo es hacer un pool de todos los recursos de los que disponenmos, esos recursos serán gestionados por docker-swarm, de esa manera docker será la que se encarge de elegir por ejemplo donde se levantará (en qué máquina) nuestro contenedor y de gestionar todos lo recursos como si fuesen un todo. Una alternativa muy conocida a swarm puede ser https://kubernetes.io[Kubernetes], pero preferimos utilizar swarm dado que es una herramienta que ya viene incluida dentro de docker y es perfectamente funcional.
+
