@@ -450,7 +450,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_desarrollo">2. Desarrollo</a>
 <ul class="sectlevel2">
 <li><a href="#_instalación_de_docker">2.1. Instalación de Docker</a></li>
-<li><a href="#_aprovisionamiento_de_una_base_de_datos_mediante_docker">2.2. Aprovisionamiento de una base de datos mediante Docker</a></li>
+<li><a href="#_aprovisionamiento_de_un_servidor_de_nginx_mediante_docker">2.2. Aprovisionamiento de un servidor de nginx mediante Docker</a></li>
+<li><a href="#_docker_compose">2.3. Docker-Compose</a></li>
+</ul>
+</li>
+<li><a href="#_cheat_sheets">3. Cheat-Sheets</a>
+<ul class="sectlevel2">
+<li><a href="#_docker">3.1. Docker</a></li>
+<li><a href="#_docker_compose_2">3.2. Docker-Compose</a></li>
+<li><a href="#_docker_swarm">3.3. Docker-swarm</a></li>
 </ul>
 </li>
 </ul>
@@ -580,7 +588,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p>OSX: Se puede instala también a través de una orden de Homebrew (Packet manager para OSX).</p>
+<p>OSX: Se puede instalar también a través de una orden de Homebrew.</p>
 </li>
 </ul>
 </div>
@@ -618,32 +626,45 @@ $ yum install docker</pre>
 <p>En teoría solo os debería de faltar la herramienta compose si habéis instalado Docker en Linux, para ello seguid las instrucciones facilitadas en la documentación oficial de Docker. <a href="https://docs.docker.com/compose/install/">Instalación de docker-compose</a></p>
 </div>
 <div class="paragraph">
-<p>Para finalizar, y solo si habéis instalado Docker en Windows debeis de comprobar en las preferencias de docker que carpetas de volumen tenéis compartidas, para ello tenéis la posibilidad de compartir una carpeta de vuestro sistema, en cuyo caso todo los proyectos que tengan que ver con docker deberán estar dentro de esa carpeta, o bien directamente compartís la unidad C:, esto hará que todas las carpetas del sistema sean validas para generar una carpeta de volumen, este concepto lo explicaremos mas adelante.</p>
+<p>Para finalizar, y solo si habéis instalado Docker en Windows debéis de comprobar en las preferencias de docker que carpetas de volumen tenéis compartidas, para ello tenéis la posibilidad de compartir una carpeta de vuestro sistema, en cuyo caso todo los proyectos que tengan que ver con docker deberán estar dentro de esa carpeta, o bien directamente compartís la unidad C:, esto hará que todas las carpetas del sistema sean validas para generar una carpeta de volumen, este concepto lo explicaremos mas adelante.</p>
 </div>
 <div class="paragraph">
-<p>Para comprobar que todo este correcto en windows en la ventana de preferencias volumenes deberemos ver algo parecido a esto.</p>
+<p>Para comprobar que todo este correcto en windows en la ventana de carpetas compartidas deberemos ver algo parecido a esto.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerWin1.png" alt="dockerWin1">
+</div>
+</div>
+<div class="paragraph">
+<p>A mas inri es interesante comprobar que recursos reserváis para que docker pueda ser utilizado sin que termine colapsando el funcionamiento de vuestro sistema. Los recursos reservados dependerán mucho de vuestro sistema, pero es recomendable que al menos reservéis dos cores y un par de GB de RAM.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerWin2.png" alt="dockerWin2">
+</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_aprovisionamiento_de_una_base_de_datos_mediante_docker">2.2. Aprovisionamiento de una base de datos mediante Docker</h3>
+<h3 id="_aprovisionamiento_de_un_servidor_de_nginx_mediante_docker">2.2. Aprovisionamiento de un servidor de nginx mediante Docker</h3>
 <div class="paragraph">
-<p>Una vez tenemos instalado Docker en nuestro sistema vamos a realizar un uso básico de la plataforma para levantar un contenedor con PostgreSQL. Para ello muchas empresas ofrecen imágenes de Docker para utilizar su software las cuales podremos encontrar en <a href="https://hub.docker.com">Docker Hub</a>. Una vez estamos en Docker hub buscamos la imagen que nos interese, en nuestro caso vamos a utilizar la que aparece en el siguiente <a href="https://hub.docker.com/r/centos/postgresql-96-centos7/">enlace</a>.</p>
+<p>Una vez tenemos instalado Docker en nuestro sistema vamos a realizar un uso básico de la plataforma para levantar un contenedor con nginx. Para ello muchas empresas ofrecen imágenes de Docker para utilizar su software las cuales podremos encontrar en <a href="https://hub.docker.com">Docker Hub</a>. Una vez estamos en Docker hub buscamos la imagen que nos interese, en nuestro caso vamos a utilizar la que aparece en el siguiente <a href="https://hub.docker.com/_/nginx/">enlace</a>.</p>
 </div>
 <div class="paragraph">
-<p>En el enlace podemos ver una serie de instrucciones de como personalizar parámetros de la base de datos, en nuestro caso vamos a centrarnos en un uso básico. Lo primero que vamos a hacer es bajar la imagen del contenedor para ello utilizaremos la orden</p>
+<p>En el enlace podemos ver una serie de instrucciones de como personalizar parámetros de la nuestro servidor de nginx, en nuestro caso vamos a centrarnos en un uso básico. Lo primero que vamos a hacer es bajar la imagen del contenedor para ello utilizaremos la orden.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ docker pull centos/postgresql-96-centos7</code></pre>
+<pre class="highlight"><code>$ docker pull nginx</code></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/DockerPull.png" alt="DockerPull">
+<img src="./images/dockerPull.png" alt="dockerPull">
 </div>
 </div>
 <div class="paragraph">
-<p>Una vez descargada la imagen crearemos una carpeta donde lanzaremos la orden para levantar el contenedor, por el terminal nos crearemos una carpeta y dentro de ella crearemos otra llamada <code>data/</code>.</p>
+<p>Esto lo que hace es descargarse la imagen de nginx junto con el resto de imagenes de las cuales esta depende. Una vez descargada la imagen crearemos una carpeta donde lanzaremos la orden para levantar el contenedor, por el terminal nos crearemos una carpeta y dentro de ella crearemos otra llamada <code>data/</code>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -669,19 +690,286 @@ $ yum install docker</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ docker run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 -v data:/var/lib/pgsql/data centos/postgresql-96-centos7</code></pre>
+<pre class="highlight"><code>$ docker run -p 8080:80 -v /Users/manelme/Desktop/dra/data:/usr/share/nginx/html/ -d nginx</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Importante!!, poner ruta absoluta a el directorio que queréis utilizar como carpeta compartida de volumen.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Una vez lancemos la orden ya tendremos levantada nuestra base de datos PostgreSQL en el puerto 5432 con usuario//contraseña user//pass y base de datos db. Para comprobar que se ha lanzado podéis utilizar la orden <code>docker ps</code> y os saldrá algo parecido a esto.</p>
+<p>Una vez lancemos la orden ya tendremos levantada nuestro servidor de nginx por el puerto 8080 de nuestra maquina local. Para comprobar que se ha lanzado podéis utilizar la orden <code>docker ps</code> y os saldrá algo parecido a esto.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/DockerPs.png" alt="DockerPs">
+<img src="./images/dockerPs.png" alt="dockerPs">
 </div>
 </div>
 <div class="paragraph">
-<p>Con esto ya estamos listos para comenzar nuestra aplicación Spring Boot.</p>
+<p>Para comprobar que todo funciona nos metemos en nuestro navegador y comprobamos que <a href="http://localhost:8080" class="bare">http://localhost:8080</a> funciona correctamente.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Si tenéis algo levantado en vuestro sistema por el puerto 8080 el ejercicio no funcionara.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Vamos a analizar un poco la instrucción utilizada a la hora de lanzar nuestro contenedor de nginx:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>La instrucción <code>docker run</code> indica a Docker que debe levantar un nuevo contenedor.</p>
+</li>
+<li>
+<p>El comando <code>-p 8080:80</code> le dice a nuestro motor de dockers que debe levantar una máquina con salida en el puerto 8080 de nuestra máquina local cuyo punto de entrada será el puerto 80 del contenedo, es decir, cualquier petición que entre por el 8080 será redirigida al 80 del contenedor.</p>
+</li>
+<li>
+<p><code>-v /Users/manelme/Desktop/dra/data:/usr/share/nginx/html</code> indica que cualquier cosa que este en la carpeta <code>/Users/manelme/Desktop/dra/data</code> irá a parar a la carpeta <code>/usr/share/nginx/html</code> de nuestro contenedor y viceversa.</p>
+</li>
+<li>
+<p>El comando <code>-d nginx</code> le indica a docker que debe ejecutar la ultima imagen de nginx proveniente de docker-hub.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>En la sección 3 tenéis las opciones mas comunes usados por la mayoría de imágenes cuando ejecutamos un docker run, así como los comando mas útiles del cliente docker.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Gracias a que hemos generado una carpeta de volumen a levantar nuestro contenedor podemos hacer cosas como generar un index.html en la carpeta <code>/data</code>, esto hará que al momento tengamos esa web levantada ya en el servidor. Hagamos la prueba:</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Creamos un archivo <code>index.html</code> dentro de /data.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-HTML" data-lang="HTML">&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;DRA(ual) example nginx&lt;/title&gt;
+
+    &lt;meta charset="utf-8" /&gt;
+    &lt;meta http-equiv="Content-type" content="text/html; charset=utf-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+    &lt;style type="text/css"&gt;
+    body {
+        background-color: #f0f0f2;
+        margin: 0;
+        padding: 0;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 50px;
+        background-color: #fff;
+        border-radius: 1em;
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        body {
+            background-color: #fff;
+        }
+        div {
+            width: auto;
+            margin: 0 auto;
+            border-radius: 0;
+            padding: 1em;
+        }
+    }
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;div&gt;
+    &lt;h1&gt;DRA(ual) example nginx&lt;/h1&gt;
+    &lt;p&gt;Esta es una página de ejemplo referente a la práctica de nginx&lt;/p&gt;
+    &lt;p&gt;&lt;a href="https://ualdra.github.io/docker_101/"&gt;More information...&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Una vez hemos generado el archivo, comprobamos que el enlace de nuevo <a href="http://localhost:8080" class="bare">http://localhost:8080</a> funciona correctamente.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/nginxex.png" alt="nginxex">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker_compose">2.3. Docker-Compose</h3>
+<div class="paragraph">
+<p>El próximo paso es ver que es y como funciona <code>docker-compose</code>. Compose es un herramienta (cliente de docker) que te permite definir y hacer funcionar una aplicación multi-contenedor de Docker. En el archivo <code>docker-compose.yml</code> definimos tanto la version de la herramienta que vamos a utilizar asi como las máquinas que formarán parte de la aplicación. Esto hace que todas las máquinas, salvo que digamos los contrario, se levanten en la misma red virtual, veamos un ejemplo de archivo de definición de compose:</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Archivo de definición <code>docker-compose.yml</code> para levantar Wordpress.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yml" data-lang="yml">version: '3.3'
+
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: somewordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+volumes:
+    db_data:</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>El archivo de definición como podeis ver es muy intuitivo, en el veis como declaramos la version que se va a utilizar de compose, y a continuación se definen los servicios. como se puede observar en este caso estamos levantando un wordpress, el mismo se compone de dos servicios:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Por un lado una base de datos, como se ve, con la palabra clave <code>image</code> se indica que estamos tirando de la imagen base de mysql que encontramos en <a href="https://hub.docker.com">docker-hub</a>, la siguiente palabra clave <code>volumes</code> indica que la carpeta <code>/var/lib/mysql</code> ira a parar a la carpeta donde esta definido el volumen <code>db_data</code>, la palabra clave <code>restart</code> define que politica hay que seguir a la hora de restablecer el servicio cuando este se ve afectado por un problema que provoque una interrupción del mismo, por último con <code>environment</code> definimos las variables de entorno que la imagen necesita para configurarse.</p>
+</li>
+<li>
+<p>En segundo lugar definimos la propia wordpress donde vemos que hay dos palabras claves nuevas. Primero, la palabra clave <code>depends_on</code> definimos de que microservicios incluidos en el compose dependemos, esto fuerza a que estos servicios se inicien antes, en nuestro caso la base de datos se tiene que iniciar antes de que wordpress se ponga a funcionar (algo totalmente lógico), por último en con <code>ports</code> definimos un puerto público de la máquina local y su correspondencia en el contenedor.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Una vez hemos visto el archivo compose vamos a proceder a ejecutarlo, para ello lanzaremos la siguiente instrucción.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerComUpd.png" alt="dockerComUpd">
+</div>
+</div>
+<div class="paragraph">
+<p>La ejecución se encarga de generar una carpeta de volumen que como en este caso no la hemos creado en una ruta de manera explicita se generará en la carpeta de volumenes docker. Al igual que el volumen también se genera una red que al no nombrarla se genera con la coletilla default. Cuando termina de ejecutarse podemos comprobar con <code>docker ps</code> como se han levantado las dos maquinas definidas en el compose, y a su vez en este ejemplo vemos como hemos levantado de manera muy sencilla un Wordpress en el puesto 8000.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerPsWordpress.png" alt="dockerPsWordpress">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/webInstalacionWordpress.png" alt="webInstalacionWordpress">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>El comando -d en docker-compose hace que no se bloquee la ventana del terminal con la ejecución, asi podremos seguir utilizarla.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Por último cuando queramos detener las máquinas que estan incluidas en el archivo compose en bloque, utilizaremos la instrucción <code>docker-compose stop</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cheat_sheets">3. Cheat-Sheets</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es interesante que veáis la documentación de cada una de las herramientas de las que hemos hablado, no obstante aquí tenéis unas pequeñas imágenes con referencias de comandos de cada una de ellas.</p>
+</div>
+<div class="sect2">
+<h3 id="_docker">3.1. Docker</h3>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerCs.png" alt="dockerCs">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker_compose_2">3.2. Docker-Compose</h3>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dockerComCs.png" alt="dockerComCs">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Consultar la <a href="https://docs.docker.com/compose/compose-file/">documentación oficial de compose</a> donde podreis encontrar la sintaxis de las nuevas versiones.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker_swarm">3.3. Docker-swarm</h3>
+<div class="paragraph">
+<p>Por último es interesante entender que es el modo swarm dentro de docker. Cuando trabajamos con <a href="https://docs.docker.com/engine/swarm/">docker-swarm</a> lo que estamos haciendo es hacer un pool de todos los recursos de los que disponenmos, esos recursos serán gestionados por docker-swarm, de esa manera docker será la que se encarge de elegir por ejemplo donde se levantará (en qué máquina) nuestro contenedor y de gestionar todos lo recursos como si fuesen un todo. Una alternativa muy conocida a swarm puede ser <a href="https://kubernetes.io">Kubernetes</a>, pero preferimos utilizar swarm dado que es una herramienta que ya viene incluida dentro de docker y es perfectamente funcional.</p>
 </div>
 </div>
 </div>
@@ -689,7 +977,7 @@ $ yum install docker</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-04 11:12:27 CEST
+Last updated 2018-11-05 10:29:53 CET
 </div>
 </div>
 </body>
