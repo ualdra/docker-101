@@ -1,0 +1,176 @@
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+:source-highlighter: rouge
+
+////
+Nombre - Titulo
+////
+# Docker
+Uso avanzado de Docker - DockerHub Couchbase to Compose
+Manel Mena <manel.mena@ual.es>; Paco García <paco.garcia@ual.es>
+
+
+// Modo no numerado de apartados
+:numbered!: 
+
+
+[abstract]
+== Resumen
+
+Resumen del tutorial de Docker Hub
+
+.Objetivos
+
+* Conocer Docker Hub.
+* Buscar imágenes en el repositorio Docker Hub.
+* Utilizar imágenes de terceros.
+* Crear un docker-compose para una imágen de terceros.
+
+// Modo numerado
+:numbered:
+== ¿Qué es Docker Hub?
+
+https://hub.docker.com[Docker Hub] es un servicio proporcionado por Docker para encontrar y compartir imágenes de contenedores en nuestros ordenadores. El mismo, presenta las siguientes características o elementos principales:
+
+* Repositorios: Para la gestión (push and pull) de las imágenes de los contenedores.
+* Equipos y organizaciones: Para la gestión del acceso a los depósitos privados de imágenes de contenedores.
+* Imágenes oficiales: Son imágenes de alta calidad de los contenedores proporcionadas por Docker.
+* Imágenes de editores: Son imágenes de alta calidad de contenedores proporcionadas por proveedores externos. Estás imágenes certificadas, también incluyen soporte y garantía de compatibilidad con Docker Enterprise.
+* Creaciones: Imágenes de contenedores propias creadas desde GitHub y Bitbucket, que luego son cargadas a Docker Hub.
+* Webhooks: Acciones programadas sobre un repositorio cargado para integrar Docker Hub con otros servicios.
+
+[#img-hub] 
+.Interfaz de Docker Hub
+image::hub.png[]
+
+La interfaz principal de Docker Hub nos permite realizar búsquedas de imágenes de contenedores filtrando por diferentes parámetros como el tipo de imágen (oficial o no) o la categoría (Bases de datos, aplicaciones, etc.).
+
+[NOTE]
+====
+Podéis registraros en https://www.docker.com[web oficial de Docker] para poder usar las funciones avanzadas de Docker Hub como es la creación de repositorios.
+====
+
+== Desarrollo
+En el siguiente ejemplo vamos a ver como pasar desde una imagen alojada en Docker Hub a un archivo docker-compose. Para ello usaremos la imagen de Couchbase, una base de datos documental que acepta el lenguaje de consultas SQL.
+
+[#img-hub-couchbase] 
+.Logo de Couchbase
+image::hub-couchbase-logo.png[Logo de Couchbase]
+
+=== Búsqueda de la imágen
+
+Utilizaremos el buscador de https://hub.docker.com[Docker Hub] para buscar la imágen de Couchbase. Para ello debemos encontrarnos en *Containers* e introducir *couchbase* en el cuadro de búsqueda.
+
+[#img-hub-search-couchbase] 
+.Resultado de la búsqueda de *couchbase*
+image::hub-search-couchbase.png[]
+
+Los resultados aparecen ordenados aproximación a los términos de búsqueda pero podemos cambiarlo al número de estrellas o descargas. De cada resultado podemos ver si es una imagen oficial, la fecha de actualización, una breve descripción, etiquetas, número de descargas y estrellas.
+
+[NOTE]
+====
+Normalmente nos interesa seleccionar imágenes oficiales con un número alto de descargas y estrellas.
+====
+
+=== Información de la imágen Couchbase
+Una vez seleccionamos el resultado que nos interesa, podemos ver un resumen de las características de la imagen, así como instrucciones para descargarla con Docker.
+
+[#img-hub-couchbase-info] 
+.Información de la imagen *Couchbase*
+image::hub-couchbase-info.png[]
+
+En este caso se trata de una *imagen oficial* que puede ser ejecutada en entornos x86_64 y que se puede descargar con `docker pull couchbase`.
+
+A continuación aparaece una descripción en la que los creadores de la imagen normalmente describen su funcionamiento y uso en diferentes escenarios, así como acceso a documentación y código fuente. Primero podemos ver como se ejecuta el contenedor y que puertos hay que mapear.
+
+[#quickstart]
+.Extracto de la descripción de la imagen de Couchbase
+====
+[source]
+----
+QuickStart with Couchbase Server and Docker
+Here is how to get a single node Couchbase Server cluster running on Docker containers:
+
+Step - 1 : Run Couchbase Server docker container
+
+docker run -d --name db \
+-p 8091-8094:8091-8094 \ <1> 
+-p 11210:11210 \ <2> 
+couchbase
+
+Step - 2 : Next, visit http://localhost:8091 on the host machine to see the Web Console to start Couchbase Server setup. <3>
+----
+<1> Puertos 1 - Rango
+<2> Puertos 2
+<3> Url para probar que Couchbase funciona
+====
+
+También podemos ver como hacer persistentes los datos que utiliza la imagen para que no los perdamos al reiniciar el contenedor.
+
+[#quickstart-2]
+.Extracto de la descripción de la imagen de Couchbase
+====
+*Map Couchbase Node Specific Data to a Local Folder* : A Couchbase Server Docker container will write all persistent and node-specific data under the directory /opt/couchbase/var by default. It is recommended to map this directory to a directory on the host file system using the -v option to `docker run` to get persistence and performance.
+
+* Persistence: Storing `/opt/couchbase/var` outside the container with the `-v` option allows you to delete the container and recreate it later without losing the data in Couchbase Server. You can even update to a container running a later release/version of Couchbase Server without losing your data.
+====
+
+A modo de resumen necesitamos:
+
+. Mapear el rango de puertos 8091-8094
+. Mapear el puerto 11210
+. Crear un volumen para la ruta `/opt/couchbase/var`
+. Comprobar que funciona la interfaz web que se encuentra en http://localhost:8091
+
+=== Creación de docker-compose.yml con los datos analizados
+
+A partir de la información anterior podemos crear un fichero `docker-compose.yml` que nos ayude a ejecutar *Couchbase* sin necesida de tener que recordar todos los parametros de la invocación `docker run`
+
+
+.Archivo de definición `docker-compose.yml` para levantar Wordpress.
+====
+[source,yml]
+----
+
+version: '3.3' <1>
+
+services: <2>
+   couchbase: <3>
+     image: couchbase <4>
+     ports: 
+       - "8091-8094:8091-8094" <5>
+       - "11210:11210" <6>
+     volumes:
+       - ./data:/opt/couchbase/var <7>
+
+----
+
+<1> Versión de formato de docker-compose (actualmente es esa).
+<2> Servicios que componen el docker-compose.
+<3> Nombre que le damos al servicio. Puede ser el que queramos.
+<4> Nombre de la imagen de couchbase en Docker Hub.
+<5> Puertos 1
+<6> Puertos 2
+<7> Volumen de datos local relativo al fichero docker-compose.yml
+
+====
+
+== Actividades
+
+=== Crear docker-compose.yml para una imagen encontrada en Docker Hub
+
+Busca en Docker Hub una imagen que te resulte interesante y crea un docker-compose.yml para poder ejecutarla fácilmente. Es interesante que la imagen encontrada tenga al menos alguna de las siguientes características:
+
+. Puertos a mapear. _ej. Una consola web_
+. Volumen para persitencia. _ej. Los datos de una base de datos_
+. Dependencia de otros servicios. _ej. Wordpress necesita una base de datos_
+
+****
+Referencias:
+
+. https://blog.desdelinux.net/docker-hub-aprendiendo-tecnologia-docker/[Docker Hub: Aprendiendo un poco más sobre la tecnología Docker]
+****
