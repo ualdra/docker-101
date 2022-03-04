@@ -1,0 +1,194 @@
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+:source-highlighter: rouge
+
+////
+Nombre - Titulo
+////
+# Docker
+Uso avanzado de Docker - Desplegar un .JAR usando Dockerfile
+Manel Mena <manel.mena@ual.es>; Paco García <paco.garcia@ual.es>
+
+
+// Modo no numerado de apartados
+:numbered!: 
+
+
+[abstract]
+== Resumen
+
+Resumen del tutorial de Docker Hub
+
+.Objetivos
+
+* Conocer como ejecutar aplicaciones Java en Docker.
+* Generar Dockerfile para un proyecto.
+* Generar Docker Compose para un Dockerfile.
+* Conocer los Dockerfile Multistage
+
+// Modo numerado
+:numbered:
+== Desarrollo
+
+En el siguiente ejemplo vamos a partir de una aplicación de Spring compilada en un .jar, podemos generar un Dockerfile y Compose que se encargue de desplegarlo.
+
+=== Consideraciones del proyecto a desplegar
+
+Spring es un framework web Java que permite desplegar proyectos web en un .war (para lanzarlos desde un servidor tomcat o similar) o desde un .jar donde lleva el servidor web también embebido.
+
+[#img-spring] 
+.Logo de Spring
+image::spring-logo.png[Spring Logo, 200]
+
+En nuestro caso vamos a desplegar un fichero .jar para simplificar el proceso.
+
+=== Analizando el proyecto a desplegar
+
+En primer lugar debemos buscar en los archivos `.properties` de la carpeta `src/main/resources` para ver en qué puerto se está desplegando.
+
+[#img-spring-step1] 
+.Fichero de properties
+image::spring-step1.png[]
+
+En este paso podemos ver que se ejecuta en el puerto *8090*.
+
+=== Compilar el proyecto
+
+El siguiente paso es compilar el proyecto ejecutando `./mvn install`
+
+[#img-spring-step2] 
+.Resultado de compilar el proyecto
+image::spring-step2.png[]
+
+Tras realizarse correctamente la compilación podemos buscar el `.jar` de nuestro proyecto. 
+
+[#img-spring-step3]
+.Ejecutable del proyecto
+image::spring-step3.png[]
+
+Por lo tanto sabemos que nuestro ejecutable se encuentra en la ruta `target/wtcdefinition-0.0.1-SNAPSHOT.jar`
+
+=== Creación de Dockerfile
+
+Una vez hemos recopilado esta información podemos realizar el Dockerfile de nuestro proyecto.
+
+====
+[source, Dockerfile]
+----
+
+FROM openjdk:8-jdk-alpine <1>
+
+RUN mkdir -p /usr/app/ <2>
+
+WORKDIR /usr/app <3>
+
+COPY wtcdefinition-0.0.1-SNAPSHOT.jar /usr/app <4>
+
+EXPOSE 8090 <5>
+
+CMD ["java", "-jar", "wtcdefinition-0.0.1-SNAPSHOT.jar"] <6>
+----
+<1> Nombre de la imagen para ejecutar Java (SDK 8)
+<2> Directorio donde copiar el `.jar`
+<3> Directorio donde ejecutar las ordenes con `docker run`
+<4> Copiamos el `.jar` de nuestro proyecto al contenedor
+<5> Exponemos el puerto 8090
+<6> Comando para ejecutar nuestro `.jar` con Java
+====
+
+=== Creación de docker-compose.yml con los datos analizados
+
+A partir de la información anterior podemos crear un fichero `docker-compose.yml` que nos ayude a ejecutar nuestra aplicación sin necesida de tener que recordar todos los parametros de la invocación.
+
+
+.Archivo de definición `docker-compose.yml` para nuestra aplicación.
+====
+[source,yml]
+----
+
+version: '3.3' <1>
+
+services: <2>
+   couchbase: <3>
+     build: . <4>
+     ports: 
+       - "8090:8090" <5>
+
+----
+
+<1> Versión de formato de docker-compose (actualmente es esa).
+<2> Servicios que componen el docker-compose.
+<3> Nombre que le damos al servicio. Puede ser el que queramos.
+<4> Ruta relativa donde encontrar el Dockerfile del servicio
+<5> Puertos de la aplicación
+
+====
+
+Cuando la configuración del `docker-compose.yml` tiene algún servicio que use `build`, antes de poder lanzar la orden `docker-compose up` tenemos que hacer un `docker-compose build` para que ejecute la configuración definida en el dockerfile.
+
+== Avanzado
+
+=== Creación de Dockerfile MultiStage
+
+En lugar de compilar el `.jar` previamente a constuir la imagen Docker, podemos crear un Dockerfile que tambien lo compile. Estos Dockerfile que contienen multiples `FROM` se llaman *Multistage*.
+
+====
+[source, Dockerfile]
+----
+
+FROM openjdk:8-jdk-alpine as build <1>
+
+RUN mkdir -p /usr/app/ <2>
+
+WORKDIR /usr/app <3>
+
+COPY mvnw . <4>
+
+COPY .mvn .mvn <4>
+
+COPY pom.xml . <4>
+
+COPY src src <5>
+
+RUN sh mvnw install -DskipTests <6>
+
+FROM openjdk:8-jdk-alpine <7>
+
+RUN mkdir -p /usr/app/ <8>
+
+WORKDIR /usr/app <8>
+
+COPY --from=build /usr/app/target/wtcdefinition-0.0.1-SNAPSHOT.jar /usr/app <9>
+
+EXPOSE 8090 <10>
+
+CMD ["java", "-jar", "wtcdefinition-0.0.1-SNAPSHOT.jar"] <11>
+----
+<1> Primer Stage llamado `build`. Imagen que nos permita compilar. Pueden ser diferentes.
+<2> Directorio donde vamos a compilar.
+<3> Directorio donde ejecutar las siguientes ordenes.
+<4> Copiamos solo los ficheros necesarios para Maven.
+<5> Copiamos el código fuente de la aplicación
+<6> Compilamos usando Maven.
+<7> Segundo Stage. Imagen que nos permita ejecutar. Partimos de cero.
+<8> Creamos el directorio para ejecutar nuestro programa.
+<9> Copiamos el programa compilado en el Stage anterior.
+<10> Exponemos el puerto 8090
+<11> Comando para ejecutar nuestro `.jar` con Java
+
+====
+
+== Actividades
+
+=== Crear Dockerfile Multistage y docker-compose.yml para jar2compose
+
+Clona el repositorio https://github.com/ualdra/jar2compose
+
+Crea un fichero Dockerfile de tipo Multistage y un `docker-compose.yml` para compilar y ejecutar el proyecto.
+
+=== Crea Dockerfile y docker-compose.yml para un helloworld
+Elige un lenguaje web y crea un Hello World que se pueda ejecutar mediante un Dockerfile y `docker-compose.yml`. Puede ser .Net, NodeJS, Ruby, PHP, etc.
